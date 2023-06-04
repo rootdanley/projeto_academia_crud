@@ -52,8 +52,7 @@ void remover_turma();
 void cadastrar_professor();
 void cadastrar_inscricao();
 void cancelar_inscricao();
-// void exibir_inscricoes();
-void confirmar_turmas();
+void exibir_inscricoes();
 
 
 // Programa Principal
@@ -85,7 +84,7 @@ int main()
       cancelar_inscricao();
       break;
     case 6:
-      confirmar_turmas();
+      // confirmar_turmas();
       break;
     case 7:
       // fechar_turmas();
@@ -102,9 +101,11 @@ int main()
 		case 11:
  			remover_professor();
   		break;
+		case 12:
+			exibir_inscricoes();
+			break;
     case 0:
       printf("Saindo...\n");
-      // salvar_aula(aulas);
       exit(0);
       break;
     default:
@@ -135,11 +136,38 @@ int exibir_menu()
   printf("09. Remover turma\n");
 	printf("10. Exibir professores\n");
 	printf("11. Remover professor\n");
+	printf("12. Exibir inscrições\n");
   printf("0. Sair\n");
   printf("Escolha uma opção: ");
 scanf("%d", &opcao);
 
 return opcao;
+}
+
+void exibir_inscricoes()
+{
+    FILE *arquivo;
+    char linha[100];
+
+    printf("\n----- EXIBIR INSCRIÇÕES -----\n");
+
+    arquivo = fopen("inscricoes.csv", "r");
+    if (arquivo == NULL)
+    {
+        printf("Erro ao abrir o arquivo de inscrições.\n");
+        return;
+    }
+
+    printf("ID Inscricao | ID Aluno | ID Turma\n");
+
+    while (fgets(linha, sizeof(linha), arquivo))
+    {
+        int inscricao_id, aluno_id, turma_id;
+        sscanf(linha, "%d,%d,%d", &inscricao_id, &aluno_id, &turma_id);
+        printf("%12d | %8d | %7d\n", inscricao_id, aluno_id, turma_id);
+    }
+
+    fclose(arquivo);
 }
 
 // funcao para cadastrar os professores
@@ -359,7 +387,6 @@ void cadastrar_aluno()
   printf("Aluno cadastrado com sucesso.\n");
 }
 
-
 void cadastrar_inscricao()
 {
   struct tb_inscricoes inscricao;
@@ -480,7 +507,6 @@ void cadastrar_inscricao()
   printf("Número de vagas disponíveis: %d\n", numVagasDisponiveis);
 }
 
-
 void exibir_professores()
 {
   FILE *arquivo;
@@ -525,7 +551,6 @@ void exibir_professores()
 
   fclose(arquivo);
 }
-
 
 void remover_professor()
 {
@@ -577,8 +602,6 @@ void remover_professor()
 	printf("------------------------------");
 
 }
-
-
 
 void cadastrar_turma()
 {
@@ -654,12 +677,9 @@ void cadastrar_turma()
 
   printf("Turma cadastrada com sucesso.\n");
 }
-
-
 /*
 	A funcção exibir busca no arquivo csv e exibe os cadastros realizados
 */
-
 void exibir_turmas()
 {
   FILE *arquivo;
@@ -695,13 +715,9 @@ void exibir_turmas()
 
   fclose(arquivo);
 }
-
-
-
 /*
 	A função remover no arquivo csv
 */
-
 void remover_turma()
 {
 FILE *arquivo;
