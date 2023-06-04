@@ -1,0 +1,11 @@
+  printf("01. Cadastrar aluno\n");   feito
+  printf("02. Cadastrar professor\n"); feito
+  printf("03. Cadastrar turma\n"); feito obs: alterar codigo para ao atingir o limite de inscrição
+  printf("04. Inscrever alunos\n"); feito
+  printf("05. Cancelar inscrição\n"); feito
+  printf("06. Confirmar turmas\n"); 
+  printf("07. Fechar turmas\n");
+  printf("08. Exibir turmas\n"); feito
+  printf("09. Remover turma\n"); feito
+	printf("10. Exibir professores\n"); feito
+	printf("11. Remover professor\n"); feito

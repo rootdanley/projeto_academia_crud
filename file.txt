@@ -1,0 +1,3 @@
+01,nescau,6.50
+02,pao de forma,5.60000
+03,pao frances,5.10
