@@ -52,6 +52,7 @@ void remover_turma();
 void cadastrar_professor();
 void cadastrar_inscricao();
 void cancelar_inscricao();
+void cancelar_turmas();
 void exibir_inscricoes();
 
 
@@ -87,7 +88,7 @@ int main()
       // confirmar_turmas();
       break;
     case 7:
-      // fechar_turmas();
+      cancelar_turmas();
       break;
     case 8:
       exibir_turmas();
@@ -119,7 +120,6 @@ int main()
 }
 
 // A função a seguir cria o menu de opcoes para o usuario digitar o valor desejado
-
 int exibir_menu()
 {
   int opcao;
@@ -144,6 +144,12 @@ scanf("%d", &opcao);
 return opcao;
 }
 
+void cancelar_turmas()
+{
+	// pegar dados dos arquivos
+	// remover turma no arquivo de turma
+}
+
 void exibir_inscricoes()
 {
     FILE *arquivo;
@@ -160,18 +166,18 @@ void exibir_inscricoes()
 
     printf("ID Inscricao | ID Aluno | ID Turma\n");
 
-    while (fgets(linha, sizeof(linha), arquivo))
+
+    // para percorrer o arquivo e exibir as inscricoes
+    while (fgets(linha, sizeof(linha), arquivo)) 
     {
         int inscricao_id, aluno_id, turma_id;
         sscanf(linha, "%d,%d,%d", &inscricao_id, &aluno_id, &turma_id);
-        printf("%12d | %8d | %7d\n", inscricao_id, aluno_id, turma_id);
+        printf("%12d | %8d | %7d\n", inscricao_id, aluno_id, turma_id); //  Se o número não ocupar todos os 12 caracteres, espaços em branco serão adicionados à esquerda para preencher o espaço.
     }
 
     fclose(arquivo);
 }
-
 // funcao para cadastrar os professores
-
 void cadastrar_professor()
 {
   struct tb_professores professor;
@@ -220,15 +226,14 @@ void cadastrar_professor()
     return;
   }
 
+  // escrevendo no arquivo
   fprintf(arquivo, "%d,%s,%s,%s,%s\n", professor.prof_id, professor.prof_nome, professor.prof_cpf, professor.prof_telefone, professor.prof_email);
 
   fclose(arquivo);
 
   printf("Professor cadastrado com sucesso.\n");
 }
-
 // função para pegar o numero maximo de alunos que a turma permite, ela retorna o valor para a funcao de cadastrar inscrição
-
 int obter_max_alunos_turma(int turma_id)
 {
   FILE *arquivo;
@@ -243,12 +248,15 @@ int obter_max_alunos_turma(int turma_id)
 
   while (fgets(linha, sizeof(linha), arquivo))
   {
-    int tur_id, tur_numero_alunos_max;
-    char tur_nome[50], tur_professor[50];
-    sscanf(linha, "%d,%[^,],%[^,],%d", &tur_id, tur_nome, tur_professor, &tur_numero_alunos_max);
+   int tur_id, tur_dia_da_semana, tur_faixa_etaria, tur_horario_de_aula, tur_numero_alunos_min, tur_numero_alunos_max;
+    char tur_tipo_aula[100];
+
+    sscanf(linha, "%d,%[^,],%d,%d,%d,%d,%d", &tur_id, tur_tipo_aula, &tur_dia_da_semana, &tur_faixa_etaria, &tur_horario_de_aula, &tur_numero_alunos_min, &tur_numero_alunos_max);
+
     if (tur_id == turma_id)
     {
       fclose(arquivo);
+      printf("Limite de inscrições: %d\n",tur_numero_alunos_max);
       return tur_numero_alunos_max;
     }
   }
@@ -387,6 +395,34 @@ void cadastrar_aluno()
   printf("Aluno cadastrado com sucesso.\n");
 }
 
+
+int obter_numero_inscricoes_por_turma(int turma_id) {
+    FILE *arquivo;
+    char linha[100];
+
+    arquivo = fopen("inscricoes.csv", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de inscrições.\n");
+        return -1; // Valor inválido para indicar erro
+    }
+
+    int numInscricoes = 0;
+    int inscricao_id, inscricao_id_aluno, inscricao_id_turma;
+
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        sscanf(linha, "%d,%d,%d", &inscricao_id,&inscricao_id_aluno, &inscricao_id_turma);
+
+        if (inscricao_id_turma == turma_id) {
+            numInscricoes++;
+        }
+    }
+
+    fclose(arquivo);
+
+    return numInscricoes;
+}
+
+
 void cadastrar_inscricao()
 {
   struct tb_inscricoes inscricao;
@@ -404,6 +440,7 @@ void cadastrar_inscricao()
   printf("ID da turma: ");
   scanf("%d", &inscricao.inscricao_id_turma);
 
+  int teste = inscricao.inscricao_id_turma;
   // Verificar se o aluno existe no arquivo "alunos.csv"
   arquivo = fopen("alunos.csv", "r");
   if (arquivo == NULL)
@@ -474,11 +511,10 @@ void cadastrar_inscricao()
     return;
   }
 
-  int numInscricoes = 0;
-  while (fgets(linha, sizeof(linha), arquivo))
-  {
-    numInscricoes++;
-  }
+// essa parte deve percorrer o arquivo inscricoes e retornar o numero de inscricoes
+
+  int numInscricoes = obter_numero_inscricoes_por_turma(teste);
+
 
   fclose(arquivo);
 
@@ -504,7 +540,7 @@ void cadastrar_inscricao()
   fclose(arquivo);
 
   printf("Inscrição cadastrada com sucesso.\n");
-  printf("Número de vagas disponíveis: %d\n", numVagasDisponiveis);
+  printf("Número de vagas disponíveis: %d\n", numVagasDisponiveis - 1);
 }
 
 void exibir_professores()
@@ -677,9 +713,9 @@ void cadastrar_turma()
 
   printf("Turma cadastrada com sucesso.\n");
 }
-/*
-	A funcção exibir busca no arquivo csv e exibe os cadastros realizados
-*/
+
+//	A funcção exibir busca no arquivo csv e exibe os cadastros realizados
+
 void exibir_turmas()
 {
   FILE *arquivo;
@@ -715,9 +751,9 @@ void exibir_turmas()
 
   fclose(arquivo);
 }
-/*
-	A função remover no arquivo csv
-*/
+
+//	A função remover no arquivo csv
+
 void remover_turma()
 {
 FILE *arquivo;
